@@ -1,6 +1,6 @@
 import pandas as pd
 
-df_breast_cancer = pd.read_csv('Breast_Cancer.csv', sep=",", header=0)
+df_breast_cancer = pd.read_csv('data/Breast_Cancer.csv', sep=",", header=0)
 
 # Check for missing values
 missing_values = df_breast_cancer.isnull().sum()
@@ -40,10 +40,32 @@ a_stage_mapping = {
 }
 df_breast_cancer['A Stage'] = df_breast_cancer['A Stage'].map(a_stage_mapping)
 
-wd_stage_mapping = {
+diff_mapping = {
     'Well differentiated': 0,
     'Moderately differentiated': 1,
     'Poorly differentiated': 2,
     'Undifferentiated': 3
 }
-df_breast_cancer['WD Stage'] = df_breast_cancer['WD Stage'].map(wd_stage_mapping)
+df_breast_cancer['differentiate'] = df_breast_cancer['differentiate'].map(diff_mapping)
+
+es_status_mapping = {
+    'Negative': 0,
+    'Positive': 1
+}
+df_breast_cancer['Estrogen Status'] = df_breast_cancer['Estrogen Status'].map(es_status_mapping)
+df_breast_cancer['Progesterone Status'] = df_breast_cancer['Progesterone Status'].map(es_status_mapping)
+
+status_status_mapping = {
+    'Alive': 1,
+    'Dead': 0
+}
+df_breast_cancer['Status'] = df_breast_cancer['Status'].map(status_status_mapping)
+
+# Eliminate grade column
+df_breast_cancer = df_breast_cancer.drop(columns=['Grade'])
+# keep 1500 rows having all the Status=0 and the rest of the rows having Status=1
+df_breast_cancer = df_breast_cancer.sort_values(by='Status', ascending=False)
+df_breast_cancer = df_breast_cancer.iloc[:1500, :]
+
+df_breast_cancer.to_csv('data/Breast_Cancer_Preprocessed.csv', index=False)
+
